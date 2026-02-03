@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة بيانات العملاء</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<header class="header">
+  <img src="images/knowhow.png" class="logo">
+  <img id="clientLogo" class="logo client-logo" src="" alt="شعار العميل">
+</header>
+
+<main class="hero">
+  <h2 id="clientSlogan" style="color:white; margin-bottom: 30px; font-size:28px;">نص الشعار هنا</h2>
+
+  <div class="socials">
+    <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
+    <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
+    <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat-ghost"></i></div>
+    <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
+    <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
+    <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
+  </div>
+</main>
+
+<div class="layer" id="layer">
+  <div class="layer-left">
+    <div class="date-nav">
+      <button class="arrow left" onclick="prevDay()">‹</button>
+      <span id="dateText">-- / --</span>
+      <button class="arrow right" onclick="nextDay()">›</button>
+    </div>
+    <div class="close-icon" onclick="closeLayer()">
+      <img id="platformLogo" alt="شعار المنصة">
+    </div>
+  </div>
+
+  <div class="layer-right">
+    <canvas id="chart" width="400" height="250"></canvas>
+
+    <table id="dataTable">
+      <tr>
+        <th>زوار الصفحة</th>
+        <th>النقرات</th>
+        <th>مرات الظهور</th>
+        <th>التكلفة</th>
+      </tr>
+      <tr>
+        <td colspan="4">لا توجد بيانات</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
