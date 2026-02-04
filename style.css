@@ -1,229 +1,105 @@
-/* --- التنسيق العام --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial;
 }
 
-body {
-  background: #4A0067; /* لون الخلفية الأساسي */
-  overflow-x: hidden;
-}
-
-/* --- الهيدر (الجزء العلوي الأبيض) --- */
 .header {
-  height: 100px;
+  height: 150px; /* أكبر من قبل */
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
-  position: relative;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 10;
+  padding: 0 50px;
 }
 
-.logo { 
-  height: 70px; 
-  object-fit: contain;
-}
+.company-logo { height: 150px; } /* أكبر */
+.client-logo { height: 130px; } /* أكبر ويتغير */
 
-/* شعار العميل المرتبط بقوقل شيت */
-.client-logo {
-  height: 60px;
-  max-width: 150px;
-  display: none; /* سيتم إظهاره عبر JS عند تحميل الشعار */
-}
-
-/* --- القسم الرئيسي (Hero) --- */
-.hero {
-  min-height: calc(100vh - 100px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.dashboard {
+  background: #f5f5f5;
+  padding: 20px 50px;
   text-align: center;
-  padding: 40px 20px;
-  position: relative;
 }
 
-/* اسم العميل المخفي (لك فقط) */
-#adminClientName {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 11px;
-  pointer-events: none;
-  user-select: none;
+.dashboard h3 { margin-bottom: 15px; }
+.dashboard-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
 }
+.stat p { font-weight: bold; margin-bottom: 5px; }
+.stat span { font-size: 24px; color: #EC6F54; }
 
-/* النص المتغير (Slogan) */
-#clientSlogan {
+.hero {
+  min-height: 200px;
+  background: #4A0067;
   color: white;
-  margin-bottom: 40px;
-  font-size: 28px;
-  font-weight: 300;
-  max-width: 800px;
-  line-height: 1.5;
+  text-align: center;
+  padding: 50px 20px;
 }
 
-/* --- أيقونات التواصل الاجتماعي --- */
+.client-slogan {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
 .socials {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 25px;
+  gap: 35px;
 }
 
 .social-box {
-  width: 90px;
-  height: 90px;
-  background: rgba(236, 111, 84, 0.85);
-  border-radius: 20px;
+  width: 95px;
+  height: 95px;
+  background: rgba(236,111,84,0.7);
+  border-radius: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: 0.3s;
 }
+.social-box i { font-size: 42px; color: black; }
 
-.social-box:hover {
-  transform: translateY(-10px);
-  background: rgba(236, 111, 84, 1);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.social-box i { 
-  font-size: 40px; 
-  color: #fff; 
-}
-
-/* --- الطبقة المنبثقة (Layer) --- */
 .layer {
   position: fixed;
   inset: 0;
   display: flex;
   transform: translateX(-100%);
-  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+  transition: transform 0.6s ease;
   z-index: 999;
 }
+.layer.active { transform: translateX(0); }
 
-.layer.active { 
-  transform: translateX(0); 
-}
-
-/* الجزء الأيسر (التحكم بالتاريخ) */
 .layer-left {
   width: 25%;
-  background: #EC6F54;
-  border-radius: 0 50px 50px 0;
-  padding: 40px 20px;
+  background: #EC6F54; /* اللون البرتقالي */
+  border-radius: 0 60px 60px 0;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  color: white;
 }
 
 .date-nav {
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 20px;
-  width: 100%;
-}
-
-.date-nav span {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.arrow {
-  background: rgba(255,255,255,0.2);
-  border: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
   color: white;
-  font-size: 30px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.3s;
 }
+.date-nav span { font-size: 28px; font-weight: bold; }
+.date-nav button { background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
 
-.arrow:hover {
-  background: white;
-  color: #EC6F54;
-}
+.platform-logo-container img { width: 100px; margin-top: 20px; }
 
-.close-icon img {
-  width: 70px;
-  cursor: pointer;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-  transition: 0.3s;
-}
+.layer-right { width: 75%; background: white; padding: 40px; }
 
-.close-icon img:hover {
-  transform: scale(1.1);
-}
-
-/* الجزء الأيمن (الرسم البياني والجدول) */
-.layer-right {
-  width: 75%;
-  background: #fdfdfd;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  overflow-y: auto;
-}
-
-/* --- الرسم البياني --- */
-#chartContainer {
-  flex: 1;
-  min-height: 300px;
-  max-height: 400px;
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-/* --- الجدول --- */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: white;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-th {
-  background: #f8f9fa;
-  color: #4A0067;
-  font-weight: bold;
-  padding: 18px;
-  border-bottom: 2px solid #eee;
-}
-
-td {
-  padding: 15px;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  font-size: 18px;
-  color: #333;
-}
-
-/* --- التجاوب مع الجوال --- */
-@media (max-width: 768px) {
-  .layer { flex-direction: column; }
-  .layer-left { width: 100%; height: 30%; border-radius: 0 0 30px 30px; }
-  .layer-right { width: 100%; height: 70%; padding: 20px; }
-  .header { padding: 0 15px; }
-  .logo { height: 50px; }
-  .social-box { width: 70px; height: 70px; }
-}
+table { width: 100%; margin-top: 30px; border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
