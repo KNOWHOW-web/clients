@@ -10,9 +10,35 @@
 <body>
 
 <header class="header">
-  <img src="images/knowhow.png" class="logo">
+  <!-- شعار الشركة أكبر وثابت -->
+  <img src="images/knowhow.png" class="logo company-logo">
+
+  <!-- شعار العميل أكبر ويتغير -->
   <img id="clientLogo" class="logo client-logo" src="" alt="شعار العميل" style="display:none;">
 </header>
+
+<!-- داشبورد العميل الشامل -->
+<section class="dashboard">
+  <h3>العميل: <span id="dashboardClientName">--</span></h3>
+  <div class="dashboard-stats">
+    <div class="stat">
+      <p>النقرات</p>
+      <span id="totalClicks">0</span>
+    </div>
+    <div class="stat">
+      <p>المشاهدات</p>
+      <span id="totalLanding">0</span>
+    </div>
+    <div class="stat">
+      <p>مرات الظهور</p>
+      <span id="totalImpressions">0</span>
+    </div>
+    <div class="stat">
+      <p>التكلفة</p>
+      <span id="totalCost">0</span>
+    </div>
+  </div>
+</section>
 
 <main class="hero">
   <p id="adminClientName" style="color: rgba(255,255,255,0.3); font-size: 12px; position: absolute; top: 140px;"></p>
@@ -36,7 +62,7 @@
       <span id="dateText">-- / --</span>
       <button class="arrow right" onclick="nextDay()">›</button>
     </div>
-    <div class="close-icon" onclick="closeLayer()">
+    <div class="platform-logo-container">
       <img id="platformLogo" alt="شعار المنصة">
     </div>
   </div>
