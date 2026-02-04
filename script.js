@@ -5,7 +5,7 @@ let activeClient = null;
 let dataSet = {};
 
 // ضع هنا رابط الـ API الخاص بك (Google Sheets Apps Script)
-const apiURL = "رابط_الـ_WEB_APP_الخاص_بك";
+const apiURL = "https://script.google.com/macros/s/AKfycbzY_8QWhq7bMZCR_X99MfRSki7seiL80NOdv2Rd3KcS_Zthsqa_Xg7-BWKPIubGti1w/exec";
 
 // الحصول على التوكن من الرابط
 const urlParams = new URLSearchParams(window.location.search);
