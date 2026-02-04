@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>لوحة بيانات العملاء</title>
+  <title id="pageTitle">لوحة بيانات العملاء</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -11,11 +11,13 @@
 
 <header class="header">
   <img src="images/knowhow.png" class="logo">
-  <img id="clientLogo" class="logo client-logo" src="" alt="شعار العميل">
+  <img id="clientLogo" class="logo client-logo" src="" alt="شعار العميل" style="display:none;">
 </header>
 
 <main class="hero">
-  <h2 id="clientSlogan" style="color:white; margin-bottom: 30px; font-size:28px;">نص الشعار هنا</h2>
+  <p id="adminClientName" style="color: rgba(255,255,255,0.3); font-size: 12px; position: absolute; top: 140px;"></p>
+  
+  <h2 id="clientSlogan" style="color:white; margin-bottom: 30px; font-size:28px;"></h2>
 
   <div class="socials">
     <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
@@ -40,18 +42,22 @@
   </div>
 
   <div class="layer-right">
-    <canvas id="chart" width="400" height="250"></canvas>
+    <div style="height: 300px; margin-bottom: 20px;">
+        <canvas id="chart"></canvas>
+    </div>
 
     <table id="dataTable">
-      <tr>
-        <th>زوار الصفحة</th>
-        <th>النقرات</th>
-        <th>مرات الظهور</th>
-        <th>التكلفة</th>
-      </tr>
-      <tr>
-        <td colspan="4">لا توجد بيانات</td>
-      </tr>
+      <thead>
+        <tr>
+          <th>زوار الصفحة</th>
+          <th>النقرات</th>
+          <th>مرات الظهور</th>
+          <th>التكلفة</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="4">اختر منصة لعرض البيانات</td></tr>
+      </tbody>
     </table>
   </div>
 </div>
