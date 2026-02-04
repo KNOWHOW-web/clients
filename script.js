@@ -4,8 +4,7 @@ let chart;
 let activeClient = null;
 let dataSet = {};
 
-// ضع هنا رابط الـ API الخاص بك (Google Sheets Apps Script)
-const apiURL = "https://script.google.com/macros/s/AKfycbzY_8QWhq7bMZCR_X99MfRSki7seiL80NOdv2Rd3KcS_Zthsqa_Xg7-BWKPIubGti1w/exec";
+const apiURL = "https://script.google.com/macros/s/AKfycby7diQEG5ePD81NpErvZZ8-d8DI0QVl6b4rH74daRUgddLDMVJruLzP4_EumHW70hzm/exec";
 
 // الحصول على التوكن من الرابط
 const urlParams = new URLSearchParams(window.location.search);
