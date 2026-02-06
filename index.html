@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | KnowHow</title>
+  <title>Customer Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -12,10 +12,11 @@
  
 <header class="main-header">
     <div class="header-container">
-        <img src="images/knowhow.png" class="knowhow-logo">
+        <img src="images/knowhow.png" class="knowhow-logo" alt="KnowHow Logo">
+        
         <div class="client-logo-wrapper">
-           <img id="clientLogo" src="" style="display:none;">
-           <span id="logoPlaceholder">logo</span>
+           <img id="clientLogo" src="" style="display:none;" class="client-logo">
+           <span id="logoPlaceholder">logo client</span>
         </div>
     </div>
 </header>
@@ -50,7 +51,7 @@
     <div class="social-grid">
       <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
       <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
-      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat"></i></div>
+      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat-ghost"></i></div>
       <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
       <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
       <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
@@ -63,9 +64,9 @@
 <div class="layer" id="layer">
   <div class="layer-sidebar">
     <div class="date-navigation">
-      <button onclick="prevDay()">‹</button>
-      <span id="dateText">-- / --</span>
       <button onclick="nextDay()">›</button>
+      <span id="dateText">-- / --</span>
+      <button onclick="prevDay()">‹</button>
     </div>
     <div class="close-icon" onclick="closeLayer()">
         <i id="layerIcon"></i>
