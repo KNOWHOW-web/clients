@@ -9,17 +9,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body id="mainBody" style="display:none;">
-
+ 
 <header class="main-header">
-  <div class="header-container">
-    <img src="images/knowhow.png" class="knowhow-logo">
-    <div class="client-logo-wrapper">
-       <img id="clientLogo" src="" style="display:none;">
-       <span id="logoPlaceholder">logo</span>
+    <div class="header-container">
+        <img src="images/knowhow.png" class="knowhow-logo" alt="KnowHow Logo">
+        <div class="client-logo-wrapper">
+           <img id="clientLogo" src="" style="display:none;" class="client-logo">
+           <span id="logoPlaceholder">logo</span>
+        </div>
     </div>
-  </div>
 </header>
-
+ 
 <main class="content-wrapper">
   <section class="main-dashboard">
     <div class="dashboard-card">
@@ -45,21 +45,21 @@
       </div>
     </div>
   </section>
-
+ 
   <section class="social-nav">
     <div class="social-grid">
-      <div class="social-btn" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
-      <div class="social-btn" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
-      <div class="social-btn" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat-ghost"></i></div>
-      <div class="social-btn" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
-      <div class="social-btn" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
-      <div class="social-btn" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
+      <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
+      <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
+      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat"></i></div>
+      <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
+      <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
+      <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
     </div>
   </section>
 </main>
-
+ 
 <footer class="footer-note">BY KNOWHOW</footer>
-
+ 
 <div class="layer" id="layer">
   <div class="layer-sidebar">
     <div class="date-navigation">
@@ -67,7 +67,7 @@
       <span id="dateText">-- / --</span>
       <button onclick="prevDay()">‹</button>
     </div>
-    <div class="sidebar-platform-icon" style="cursor:pointer;" onclick="closeLayer()">
+    <div class="close-icon" onclick="closeLayer()" style="cursor:pointer;">
         <i id="layerIcon"></i>
     </div>
   </div>
@@ -90,7 +90,7 @@
     </div>
   </div>
 </div>
-
+ 
 <script src="script.js"></script>
 </body>
 </html>
