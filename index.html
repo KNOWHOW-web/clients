@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Dashboard</title>
+  <title>Dashboard | KnowHow</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -12,9 +12,9 @@
  
 <header class="main-header">
     <div class="header-container">
-        <img src="images/knowhow.png" class="knowhow-logo" alt="KnowHow Logo">
+        <img src="images/knowhow.png" class="knowhow-logo">
         <div class="client-logo-wrapper">
-           <img id="clientLogo" src="" style="display:none;" class="client-logo">
+           <img id="clientLogo" src="" style="display:none;">
            <span id="logoPlaceholder">logo</span>
         </div>
     </div>
@@ -63,11 +63,11 @@
 <div class="layer" id="layer">
   <div class="layer-sidebar">
     <div class="date-navigation">
-      <button onclick="nextDay()">›</button>
-      <span id="dateText">-- / --</span>
       <button onclick="prevDay()">‹</button>
+      <span id="dateText">-- / --</span>
+      <button onclick="nextDay()">›</button>
     </div>
-    <div class="close-icon" onclick="closeLayer()" style="cursor:pointer;">
+    <div class="close-icon" onclick="closeLayer()">
         <i id="layerIcon"></i>
     </div>
   </div>
