@@ -12,12 +12,11 @@
  
 <header class="main-header">
     <div class="header-container">
-        <img src="images/knowhow.png" class="knowhow-logo" alt="KnowHow Logo">
-        
         <div class="client-logo-wrapper">
-           <img id="clientLogo" src="" style="display:none;" class="client-logo">
-           <span id="logoPlaceholder">logo client</span>
+           <img id="clientLogo" src="" style="display:none;" class="header-logo">
+           <span id="logoPlaceholder">logo</span>
         </div>
+        <img src="images/knowhow.png" class="header-logo knowhow-logo" alt="KnowHow Logo">
     </div>
 </header>
  
@@ -51,7 +50,7 @@
     <div class="social-grid">
       <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
       <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
-      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat-ghost"></i></div>
+      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat"></i></div>
       <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
       <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
       <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
@@ -68,8 +67,11 @@
       <span id="dateText">-- / --</span>
       <button onclick="prevDay()">‹</button>
     </div>
-    <div class="close-icon" onclick="closeLayer()">
+    <div class="layer-platform-icon">
         <i id="layerIcon"></i>
+    </div>
+    <div class="close-icon" onclick="closeLayer()">
+        <i class="fas fa-times"></i>
     </div>
   </div>
   <div class="layer-content">
