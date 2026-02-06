@@ -1,105 +1,60 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial;
+:root {
+    --primary-purple: #4A0067;
+    --accent-orange: #EC6F54;
+    --light-gray-bg: #F5F5F5;
 }
 
-.header {
-  height: 150px; /* أكبر من قبل */
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 50px;
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+
+body { background-color: var(--primary-purple); overflow-x: hidden; direction: rtl; min-height: 100vh; position: relative; }
+
+.main-header { background: white; padding: 15px 50px; height: 130px; }
+.header-container { display: flex; justify-content: space-between; align-items: center; max-width: 100%; height: 100%; }
+
+.knowhow-logo { height: 80px; order: 1; } /* يسار */
+.client-logo-wrapper { order: 2; border: 2px solid #000; width: 220px; height: 100px; display: flex; justify-content: center; align-items: center; background: #fff; } /* يمين */
+.client-logo-wrapper img { max-height: 80px; max-width: 100%; }
+
+.content-wrapper { display: flex; flex-direction: column; align-items: center; padding-top: 60px; }
+
+.dashboard-card { 
+    background: var(--light-gray-bg); 
+    border-radius: 60px; 
+    padding: 60px 40px; 
+    width: 90%; 
+    max-width: 1150px; 
+    text-align: center; 
 }
 
-.company-logo { height: 150px; } /* أكبر */
-.client-logo { height: 130px; } /* أكبر ويتغير */
+.client-title { font-size: 28px; font-weight: bold; margin-bottom: 50px; }
 
-.dashboard {
-  background: #f5f5f5;
-  padding: 20px 50px;
-  text-align: center;
+.stats-grid { display: flex; justify-content: space-around; }
+.stat-label { font-size: 22px; font-weight: bold; margin-bottom: 15px; }
+.stat-value { font-size: 42px; color: var(--accent-orange); font-weight: bold; }
+
+.social-nav { margin-top: 50px; }
+.social-grid { display: flex; gap: 20px; }
+.social-btn { 
+    width: 95px; height: 95px; background: rgba(236, 111, 84, 0.7); 
+    border-radius: 22px; display: flex; justify-content: center; align-items: center; 
+    cursor: pointer; transition: 0.3s;
+}
+.social-btn i { font-size: 42px; color: #000; }
+
+.footer-note { 
+    position: absolute; bottom: 20px; left: 20px; 
+    color: rgba(255, 255, 255, 0.3); font-size: 14px; font-weight: bold; 
 }
 
-.dashboard h3 { margin-bottom: 15px; }
-.dashboard-stats {
-  display: flex;
-  justify-content: space-around;
-  gap: 20px;
-}
-.stat p { font-weight: bold; margin-bottom: 5px; }
-.stat span { font-size: 24px; color: #EC6F54; }
-
-.hero {
-  min-height: 200px;
-  background: #4A0067;
-  color: white;
-  text-align: center;
-  padding: 50px 20px;
-}
-
-.client-slogan {
-  font-size: 28px;
-  margin-bottom: 30px;
-}
-
-.socials {
-  display: flex;
-  justify-content: center;
-  gap: 35px;
-}
-
-.social-box {
-  width: 95px;
-  height: 95px;
-  background: rgba(236,111,84,0.7);
-  border-radius: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.social-box i { font-size: 42px; color: black; }
-
-.layer {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-  z-index: 999;
-}
-.layer.active { transform: translateX(0); }
-
-.layer-left {
-  width: 25%;
-  background: #EC6F54; /* اللون البرتقالي */
-  border-radius: 0 60px 60px 0;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.date-nav {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  color: white;
-}
-.date-nav span { font-size: 28px; font-weight: bold; }
-.date-nav button { background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
-
-.platform-logo-container img { width: 100px; margin-top: 20px; }
-
-.layer-right { width: 75%; background: white; padding: 40px; }
-
-table { width: 100%; margin-top: 30px; border-collapse: collapse; }
-th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+/* Layer Styles */
+.layer { position: fixed; top: 0; left: -100%; width: 100%; height: 100%; background: white; display: flex; transition: 0.6s ease; z-index: 1000; }
+.layer.active { left: 0; }
+.layer-sidebar { width: 30%; background: var(--accent-orange); border-radius: 0 50px 50px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; position: relative; }
+.date-navigation { display: flex; align-items: center; gap: 20px; color: white; font-size: 40px; margin-bottom: 100px; }
+.date-navigation button { background: none; border: none; color: white; font-size: 50px; cursor: pointer; }
+.sidebar-platform-icon { position: absolute; bottom: 50px; left: 50px; }
+.sidebar-platform-icon i { font-size: 80px; color: #000; }
+.layer-content { width: 70%; padding: 50px; }
+.chart-container { height: 350px; margin-bottom: 30px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ddd; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
