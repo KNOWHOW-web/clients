@@ -11,33 +11,28 @@ async function init() {
     const clientToken = urlParams.get('token');
     
     if (!clientToken) {
-        alert("خطأ: يرجى استخدام رابط يحتوي على Token الخاص بك.");
+        alert("يرجى التأكد من الرابط.");
         return;
     }
  
     try {
         const res = await fetch(apiURL);
         const data = await res.json();
-        
         activeClient = data.clients.find(c => String(c.token) === String(clientToken));
  
         if (activeClient) {
             document.getElementById("mainBody").style.display = "block";
             document.getElementById("dashboardClientName").textContent = activeClient.client_name;
-            
             if (activeClient.logo_url) {
                 const img = document.getElementById("clientLogo");
                 img.src = activeClient.logo_url;
                 img.style.display = "block";
                 document.getElementById("logoPlaceholder").style.display = "none";
             }
-            
             allPlatformsData = data.platforms_data;
             calculateTotalDashboard();
-        } else {
-            alert("التوكن غير صحيح، يرجى مراجعة الإدارة.");
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error fetching data:", e); }
 }
  
 function calculateTotalDashboard() {
@@ -60,21 +55,16 @@ function openLayer(platform) {
     currentPlatform = platform;
     currentDay = 0;
     const iconMap = { 
-        'TikTok': 'fab fa-tiktok', 
-        'X': 'fab fa-x-twitter', 
-        'Snapchat': 'fab fa-snapchat', 
-        'LinkedIn': 'fab fa-linkedin-in', 
-        'Instagram': 'fab fa-instagram', 
-        'YouTube': 'fab fa-youtube' 
+        'TikTok': 'fab fa-tiktok', 'X': 'fab fa-x-twitter', 
+        'Snapchat': 'fab fa-snapchat', 'LinkedIn': 'fab fa-linkedin-in', 
+        'Instagram': 'fab fa-instagram', 'YouTube': 'fab fa-youtube' 
     };
     document.getElementById("layerIcon").className = iconMap[platform];
     document.getElementById("layer").classList.add("active");
     updateLayerData();
 }
  
-function closeLayer() { 
-    document.getElementById("layer").classList.remove("active"); 
-}
+function closeLayer() { document.getElementById("layer").classList.remove("active"); }
  
 function updateLayerData() {
     const platformData = allPlatformsData.filter(d => 
@@ -83,11 +73,8 @@ function updateLayerData() {
     );
     if (platformData.length > 0) {
         const data = platformData[currentDay] || platformData[0];
-        document.getElementById("dateText").innerText = data.date || "--/--";
+        document.getElementById("dateText").innerText = data.date || "-- / --";
         renderChartAndTable(data);
-    } else {
-        document.getElementById("dateText").innerText = "لا توجد بيانات";
-        renderChartAndTable({cost:0, impressions:0, clicks:0, landing_page:0});
     }
 }
  
@@ -101,7 +88,7 @@ function renderChartAndTable(data) {
         type: 'bar',
         data: {
             labels: ["التكلفة", "مرات الظهور", "النقرات", "زوار الصفحة"],
-            datasets: [{ data: values, backgroundColor: "#EC6F54", borderRadius: 8 }]
+            datasets: [{ data: values, backgroundColor: "#EC6F54", borderRadius: 10 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
