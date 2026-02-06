@@ -3,9 +3,9 @@ let currentDay = 0;
 let chart;
 let activeClient = null;
 let allPlatformsData = []; 
-
+ 
 const apiURL = "https://script.google.com/macros/s/AKfycbykOtdU3vQT8L1FH36XsMMlUCW-rsLvtLS7-OTMFnlzDgRpDEvAzhdbjegQ-HsYe-xY/exec";
-
+ 
 async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const clientToken = urlParams.get('token');
@@ -14,13 +14,13 @@ async function init() {
         alert("خطأ: يرجى استخدام رابط يحتوي على Token الخاص بك.");
         return;
     }
-
+ 
     try {
         const res = await fetch(apiURL);
         const data = await res.json();
         
         activeClient = data.clients.find(c => String(c.token) === String(clientToken));
-
+ 
         if (activeClient) {
             document.getElementById("mainBody").style.display = "block";
             document.getElementById("dashboardClientName").textContent = activeClient.client_name;
@@ -39,7 +39,7 @@ async function init() {
         }
     } catch (e) { console.error(e); }
 }
-
+ 
 function calculateTotalDashboard() {
     const clientData = allPlatformsData.filter(d => String(d.client_id) === String(activeClient.client_id));
     const totals = clientData.reduce((acc, curr) => {
@@ -49,26 +49,38 @@ function calculateTotalDashboard() {
         acc.cost += (Number(curr.cost) || 0);
         return acc;
     }, { clicks: 0, impressions: 0, landing: 0, cost: 0 });
-
+ 
     document.getElementById("totalClicks").textContent = totals.clicks.toLocaleString();
     document.getElementById("totalImpressions").textContent = totals.impressions.toLocaleString();
     document.getElementById("totalLanding").textContent = totals.landing.toLocaleString();
     document.getElementById("totalCost").textContent = totals.cost.toLocaleString();
 }
-
+ 
 function openLayer(platform) {
     currentPlatform = platform;
     currentDay = 0;
-    const iconMap = { 'TikTok': 'fab fa-tiktok', 'X': 'fab fa-x-twitter', 'Snapchat': 'fab fa-snapchat-ghost', 'LinkedIn': 'fab fa-linkedin-in', 'Instagram': 'fab fa-instagram', 'YouTube': 'fab fa-youtube' };
+    const iconMap = { 
+        'TikTok': 'fab fa-tiktok', 
+        'X': 'fab fa-x-twitter', 
+        'Snapchat': 'fab fa-snapchat', 
+        'LinkedIn': 'fab fa-linkedin-in', 
+        'Instagram': 'fab fa-instagram', 
+        'YouTube': 'fab fa-youtube' 
+    };
     document.getElementById("layerIcon").className = iconMap[platform];
     document.getElementById("layer").classList.add("active");
     updateLayerData();
 }
-
-function closeLayer() { document.getElementById("layer").classList.remove("active"); }
-
+ 
+function closeLayer() { 
+    document.getElementById("layer").classList.remove("active"); 
+}
+ 
 function updateLayerData() {
-    const platformData = allPlatformsData.filter(d => String(d.client_id) === String(activeClient.client_id) && d.platform.toLowerCase() === currentPlatform.toLowerCase());
+    const platformData = allPlatformsData.filter(d => 
+        String(d.client_id) === String(activeClient.client_id) && 
+        d.platform.toLowerCase() === currentPlatform.toLowerCase()
+    );
     if (platformData.length > 0) {
         const data = platformData[currentDay] || platformData[0];
         document.getElementById("dateText").innerText = data.date || "--/--";
@@ -78,7 +90,7 @@ function updateLayerData() {
         renderChartAndTable({cost:0, impressions:0, clicks:0, landing_page:0});
     }
 }
-
+ 
 function renderChartAndTable(data) {
     const values = [Number(data.cost)||0, Number(data.impressions)||0, Number(data.clicks)||0, Number(data.landing_page)||0];
     document.getElementById("tableBody").innerHTML = `<tr><td>${values[0]}</td><td>${values[1]}</td><td>${values[2]}</td><td>${values[3]}</td></tr>`;
@@ -94,7 +106,7 @@ function renderChartAndTable(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
-
+ 
 function prevDay() { currentDay++; updateLayerData(); }
 function nextDay() { if (currentDay > 0) { currentDay--; updateLayerData(); } }
 init();
