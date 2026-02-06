@@ -2,101 +2,99 @@ let currentPlatform = "";
 let currentDay = 0;
 let chart;
 let activeClient = null;
-let dataSet = {};
-const apiURL = "https://script.google.com/macros/s/AKfycby7diQEG5ePD81NpErvZZ8-d8DI0QVl6b4rH74daRUgddLDMVJruLzP4_EumHW70hzm/exec";
+let allPlatformsData = []; 
 
-const urlParams = new URLSearchParams(window.location.search);
-const clientToken = urlParams.get('token');
+const apiURL = "https://script.google.com/macros/s/AKfycbykOtdU3vQT8L1FH36XsMMlUCW-rsLvtLS7-OTMFnlzDgRpDEvAzhdbjegQ-HsYe-xY/exec";
 
 async function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientToken = urlParams.get('token');
+    
     if (!clientToken) {
-        document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>عذراً، الرابط غير صحيح (Token Missing)</h1>";
+        alert("خطأ: يرجى استخدام رابط يحتوي على Token الخاص بك.");
         return;
     }
-    await fetchAppData();
-}
 
-async function fetchAppData() {
     try {
         const res = await fetch(apiURL);
-        const allSheetsData = await res.json();
-
-        activeClient = allSheetsData.clients.find(c => c.token === clientToken);
+        const data = await res.json();
+        
+        activeClient = data.clients.find(c => String(c.token) === String(clientToken));
 
         if (activeClient) {
-            if (activeClient.slogan) document.getElementById("clientSlogan").textContent = activeClient.slogan;
-            if (activeClient.logo_url) {
-                const logoImg = document.getElementById("clientLogo");
-                logoImg.src = activeClient.logo_url;
-                logoImg.style.display = "block";
-            }
+            document.getElementById("mainBody").style.display = "block";
             document.getElementById("dashboardClientName").textContent = activeClient.client_name;
-
-            dataSet = allSheetsData.platforms_data;
-
-            updateDashboardTotals();
+            
+            if (activeClient.logo_url) {
+                const img = document.getElementById("clientLogo");
+                img.src = activeClient.logo_url;
+                img.style.display = "block";
+                document.getElementById("logoPlaceholder").style.display = "none";
+            }
+            
+            allPlatformsData = data.platforms_data;
+            calculateTotalDashboard();
+        } else {
+            alert("التوكن غير صحيح، يرجى مراجعة الإدارة.");
         }
-    } catch (e) { console.error("خطأ في جلب البيانات", e); }
+    } catch (e) { console.error(e); }
 }
 
-function updateDashboardTotals() {
-    const clientData = dataSet.filter(d => d.client_id == activeClient.client_id);
-    document.getElementById("totalClicks").textContent = clientData.reduce((a,b)=>a+(b.clicks||0),0);
-    document.getElementById("totalLanding").textContent = clientData.reduce((a,b)=>a+(b.landing_page||0),0);
-    document.getElementById("totalImpressions").textContent = clientData.reduce((a,b)=>a+(b.impressions||0),0);
-    document.getElementById("totalCost").textContent = clientData.reduce((a,b)=>a+(b.cost||0),0);
+function calculateTotalDashboard() {
+    const clientData = allPlatformsData.filter(d => String(d.client_id) === String(activeClient.client_id));
+    const totals = clientData.reduce((acc, curr) => {
+        acc.clicks += (Number(curr.clicks) || 0);
+        acc.impressions += (Number(curr.impressions) || 0);
+        acc.landing += (Number(curr.landing_page) || 0);
+        acc.cost += (Number(curr.cost) || 0);
+        return acc;
+    }, { clicks: 0, impressions: 0, landing: 0, cost: 0 });
+
+    document.getElementById("totalClicks").textContent = totals.clicks.toLocaleString();
+    document.getElementById("totalImpressions").textContent = totals.impressions.toLocaleString();
+    document.getElementById("totalLanding").textContent = totals.landing.toLocaleString();
+    document.getElementById("totalCost").textContent = totals.cost.toLocaleString();
 }
 
-async function openLayer(platform) {
+function openLayer(platform) {
     currentPlatform = platform;
     currentDay = 0;
+    const iconMap = { 'TikTok': 'fab fa-tiktok', 'X': 'fab fa-x-twitter', 'Snapchat': 'fab fa-snapchat-ghost', 'LinkedIn': 'fab fa-linkedin-in', 'Instagram': 'fab fa-instagram', 'YouTube': 'fab fa-youtube' };
+    document.getElementById("layerIcon").className = iconMap[platform];
     document.getElementById("layer").classList.add("active");
-
-    const platformIcons = {
-        TikTok: "images/tiktok.png", X: "images/x.png", Snapchat: "images/snapchat.png",
-        LinkedIn: "images/linkedin.png", Instagram: "images/instagram.png", YouTube: "images/youtube.png"
-    };
-    document.getElementById("platformLogo").src = platformIcons[platform];
-
-    updateData();
+    updateLayerData();
 }
 
-function updateData() {
-    const platformData = dataSet.filter(d => d.client_id == activeClient.client_id && d.platform.toLowerCase() == currentPlatform.toLowerCase());
+function closeLayer() { document.getElementById("layer").classList.remove("active"); }
 
-    if(platformData.length>0){
-        const data = platformData[currentDay];
+function updateLayerData() {
+    const platformData = allPlatformsData.filter(d => String(d.client_id) === String(activeClient.client_id) && d.platform.toLowerCase() === currentPlatform.toLowerCase());
+    if (platformData.length > 0) {
+        const data = platformData[currentDay] || platformData[0];
         document.getElementById("dateText").innerText = data.date || "--/--";
-        updateChartAndTable(data);
+        renderChartAndTable(data);
     } else {
-        document.getElementById("dateText").innerText="-- / --";
-        updateChartAndTable({landing_page:0,clicks:0,impressions:0,cost:0});
+        document.getElementById("dateText").innerText = "لا توجد بيانات";
+        renderChartAndTable({cost:0, impressions:0, clicks:0, landing_page:0});
     }
 }
 
-function updateChartAndTable(data){
-    const values = [data.landing_page||0, data.clicks||0, data.impressions||0, data.cost||0];
-
-    document.getElementById("tableBody").innerHTML = `
-        <tr>
-          <td>${values[0]}</td>
-          <td>${values[1]}</td>
-          <td>${values[2]}</td>
-          <td>${values[3]}</td>
-        </tr>`;
-
+function renderChartAndTable(data) {
+    const values = [Number(data.cost)||0, Number(data.impressions)||0, Number(data.clicks)||0, Number(data.landing_page)||0];
+    document.getElementById("tableBody").innerHTML = `<tr><td>${values[0]}</td><td>${values[1]}</td><td>${values[2]}</td><td>${values[3]}</td></tr>`;
+    
     const ctx = document.getElementById("chart").getContext('2d');
-    if(chart) chart.destroy();
-    chart=new Chart(ctx,{
-        type:'bar',
-        data:{labels:["زوار الصفحة","النقرات","مرات الظهور","التكلفة"],
-        datasets:[{data:values,backgroundColor:"rgba(236,111,84,0.8)",borderRadius:8}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{display:false,beginAtZero:true},x:{ticks:{color:'#333'}}}}
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["التكلفة", "مرات الظهور", "النقرات", "زوار الصفحة"],
+            datasets: [{ data: values, backgroundColor: "#EC6F54", borderRadius: 8 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
 
-function closeLayer(){document.getElementById("layer").classList.remove("active");}
-function prevDay(){currentDay++; updateData();}
-function nextDay(){if(currentDay>0){currentDay--; updateData();}}
-
+function prevDay() { currentDay++; updateLayerData(); }
+function nextDay() { if (currentDay > 0) { currentDay--; updateLayerData(); } }
 init();
