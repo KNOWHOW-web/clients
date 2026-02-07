@@ -1,99 +1,85 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Dashboard</title>
+  <title>لوحة بيانات العملاء</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body id="mainBody" style="display:none;">
- 
-<header class="main-header">
-    <div class="header-container">
-        <div class="client-logo-wrapper">
-           <img id="clientLogo" src="" style="display:none;" class="header-logo">
-           <span id="logoPlaceholder">logo</span>
-        </div>
-        <img src="images/knowhow.png" class="header-logo knowhow-logo" alt="KnowHow Logo">
-    </div>
+<body>
+
+<header class="header">
+  <img src="images/knowhow.png" class="logo">
+  <img id="clientLogo" class="logo client-logo" src="" alt="شعار العميل">
 </header>
- 
-<main class="content-wrapper">
-  <section class="main-dashboard">
-    <div class="dashboard-card">
-      <h3 class="client-title">العميل : <span id="dashboardClientName">--</span></h3>
-      
-      <div class="stats-grid">
-        <div class="stat-item">
-            <p class="stat-label">النقرات</p>
-            <span class="stat-value" id="totalClicks">00</span>
-        </div>
-        <div class="stat-item">
-            <p class="stat-label">مرات الظهور</p>
-            <span class="stat-value" id="totalImpressions">00</span>
-        </div>
-        <div class="stat-item">
-            <p class="stat-label">زوار الصفحة</p>
-            <span class="stat-value" id="totalLanding">00</span>
-        </div>
-        <div class="stat-item">
-            <p class="stat-label">التكلفة</p>
-            <span class="stat-value" id="totalCost">00</span>
-        </div>
+
+<main class="hero">
+  <h2 id="clientSlogan" style="color:white; margin-bottom: 30px; font-size:28px;">نص الشعار هنا</h2>
+
+  <div class="summary-dashboard">
+    <h3 id="summaryClientName">اسم العميل</h3>
+    <div class="summary-stats">
+      <div class="stat-box">
+        <span class="stat-label">النقرات</span>
+        <span id="totalClicks" class="stat-value">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">مرات الظهور</span>
+        <span id="totalImpressions" class="stat-value">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">زوار الصفحة</span>
+        <span id="totalVisitors" class="stat-value">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">التكلفة</span>
+        <span id="totalCost" class="stat-value">0</span>
       </div>
     </div>
-  </section>
- 
-  <section class="social-nav">
-    <div class="social-grid">
-      <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
-      <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
-      <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat"></i></div>
-      <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
-      <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
-      <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
-    </div>
-  </section>
+  </div>
+
+  <div class="socials">
+    <div class="social-box" onclick="openLayer('TikTok')"><i class="fab fa-tiktok"></i></div>
+    <div class="social-box" onclick="openLayer('X')"><i class="fab fa-x-twitter"></i></div>
+    <div class="social-box" onclick="openLayer('Snapchat')"><i class="fab fa-snapchat-ghost"></i></div>
+    <div class="social-box" onclick="openLayer('LinkedIn')"><i class="fab fa-linkedin-in"></i></div>
+    <div class="social-box" onclick="openLayer('Instagram')"><i class="fab fa-instagram"></i></div>
+    <div class="social-box" onclick="openLayer('YouTube')"><i class="fab fa-youtube"></i></div>
+  </div>
 </main>
- 
-<footer class="footer-note">BY KNOWHOW</footer>
- 
+
+<footer class="attribution">BY KNOWHOW</footer>
+
 <div class="layer" id="layer">
-  <div class="layer-sidebar">
-    <div class="date-navigation">
-      <button onclick="nextDay()">›</button>
+  <div class="layer-left">
+    <div class="date-nav">
+      <button class="arrow left" onclick="prevDay()">‹</button>
       <span id="dateText">-- / --</span>
-      <button onclick="prevDay()">‹</button>
-    </div>
-    <div class="layer-platform-icon">
-        <i id="layerIcon"></i>
+      <button class="arrow right" onclick="nextDay()">›</button>
     </div>
     <div class="close-icon" onclick="closeLayer()">
-        <i class="fas fa-times"></i>
+      <img id="platformLogo" alt="شعار المنصة">
     </div>
   </div>
-  <div class="layer-content">
-    <div class="chart-container">
-        <canvas id="chart"></canvas>
-    </div>
-    <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>التكلفة</th>
-              <th>مرات الظهور</th>
-              <th>النقرات</th>
-              <th>زوار الصفحة</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+
+  <div class="layer-right">
+    <canvas id="chart" width="400" height="250"></canvas>
+
+    <table id="dataTable">
+      <tr>
+        <th>زوار الصفحة</th>
+        <th>النقرات</th>
+        <th>مرات الظهور</th>
+        <th>التكلفة</th>
+      </tr>
+      <tr>
+        <td colspan="4">لا توجد بيانات</td>
+      </tr>
+    </table>
   </div>
 </div>
- 
+
 <script src="script.js"></script>
 </body>
 </html>
