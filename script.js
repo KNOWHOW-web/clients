@@ -1,126 +1,150 @@
 let currentPlatform = "";
 let currentDay = 0;
 let chart;
-let activeClient = null;
-let allPlatformsData = []; 
- 
+
+// REPLACE THIS with your "Published to Web" CSV link from Google Sheets
 const apiURL = "https://script.google.com/macros/s/AKfycbykOtdU3vQT8L1FH36XsMMlUCW-rsLvtLS7-OTMFnlzDgRpDEvAzhdbjegQ-HsYe-xY/exec";
- 
-async function init() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const clientToken = urlParams.get('token');
-    
-    if (!clientToken) {
-        alert("يرجى التأكد من الرابط.");
-        return;
+
+const platformLogos = {
+  TikTok:"images/tiktok.png",
+  X:"images/x.png",
+  Snapchat:"images/snapchat.png",
+  LinkedIn:"images/linkedin.png",
+  Instagram:"images/instagram.png",
+  YouTube:"images/youtube.png"
+};
+
+let clientsData = [];
+let dataSet = {};
+
+function csvToArray(str, delimiter = ",") {
+  const lines = str.split("\n");
+  const headers = lines[0].split(delimiter).map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const values = line.split(delimiter);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
+    return obj;
+  });
+}
+
+async function fetchClients() {
+  try {
+    const res = await fetch(apiURL);
+    const text = await res.text();
+    clientsData = csvToArray(text);
+
+    const activeClient = clientsData.find(c => c.active === "TRUE");
+    if(activeClient){
+      document.getElementById("clientSlogan").textContent = activeClient.slogan || "نص الشعار هنا";
+      document.getElementById("clientLogo").src = activeClient.logo_url;
+      document.getElementById("summaryClientName").textContent = activeClient.client_name || "اسم العميل";
+      
+      // Update Global Dashboard
+      updateGlobalDashboard(activeClient.client_id);
     }
- 
-    try {
-        const res = await fetch(apiURL);
-        const data = await res.json();
-        
-        // البحث عن العميل بناءً على التوكن
-        activeClient = data.clients.find(c => String(c.token) === String(clientToken));
- 
-        if (activeClient) {
-            document.getElementById("mainBody").style.display = "block";
-            document.getElementById("dashboardClientName").textContent = activeClient.client_name;
-            
-            // تحديث شعار العميل
-            if (activeClient.logo_url) {
-                const img = document.getElementById("clientLogo");
-                img.src = activeClient.logo_url;
-                img.style.display = "block";
-                document.getElementById("logoPlaceholder").style.display = "none";
-            }
-            
-            allPlatformsData = data.platforms_data;
-            calculateTotalDashboard();
-        }
-    } catch (e) { console.error("Error fetching data:", e); }
+  } catch (error) {
+    console.error("Error fetching data from Google Sheets:", error);
+  }
 }
- 
-function calculateTotalDashboard() {
-    const clientData = allPlatformsData.filter(d => String(d.client_id) === String(activeClient.client_id));
-    const totals = clientData.reduce((acc, curr) => {
-        acc.clicks += (Number(curr.clicks) || 0);
-        acc.impressions += (Number(curr.impressions) || 0);
-        acc.landing += (Number(curr.landing_page) || 0);
-        acc.cost += (Number(curr.cost) || 0);
-        return acc;
-    }, { clicks: 0, impressions: 0, landing: 0, cost: 0 });
- 
-    document.getElementById("totalClicks").textContent = totals.clicks.toLocaleString();
-    document.getElementById("totalImpressions").textContent = totals.impressions.toLocaleString();
-    document.getElementById("totalLanding").textContent = totals.landing.toLocaleString();
-    document.getElementById("totalCost").textContent = totals.cost.toLocaleString();
-}
- 
-function openLayer(platform) {
-    currentPlatform = platform;
-    currentDay = 0; // البدء من أحدث يوم
-    const iconMap = { 
-        'TikTok': 'fab fa-tiktok', 'X': 'fab fa-x-twitter', 
-        'Snapchat': 'fab fa-snapchat', 'LinkedIn': 'fab fa-linkedin-in', 
-        'Instagram': 'fab fa-instagram', 'YouTube': 'fab fa-youtube' 
-    };
-    document.getElementById("layerIcon").className = iconMap[platform];
-    document.getElementById("layer").classList.add("active");
-    updateLayerData();
-}
- 
-function closeLayer() { 
-    document.getElementById("layer").classList.remove("active"); 
-}
- 
-function updateLayerData() {
-    const platformData = allPlatformsData.filter(d => 
-        String(d.client_id) === String(activeClient.client_id) && 
-        d.platform.toLowerCase() === currentPlatform.toLowerCase()
-    );
 
-    if (platformData.length > 0) {
-        // ترتيب البيانات بحيث يكون أحدث تاريخ هو index 0 (تأكد من ترتيبها في الشيت أيضاً)
-        const data = platformData[currentDay] || platformData[0];
-        document.getElementById("dateText").innerText = data.date || "-- / --";
-        renderChartAndTable(data);
-    } else {
-        document.getElementById("dateText").innerText = "لا يوجد بيانات";
-        renderChartAndTable({cost:0, impressions:0, clicks:0, landing_page:0});
+function updateGlobalDashboard(clientId) {
+  let totals = { clicks: 0, impressions: 0, visitors: 0, cost: 0 };
+
+  clientsData.forEach(row => {
+    if(row.client_id === clientId) {
+      totals.clicks += Number(row.clicks) || 0;
+      totals.impressions += Number(row.impressions) || 0;
+      totals.visitors += Number(row.landing_page) || 0;
+      totals.cost += Number(row.cost) || 0;
     }
-}
- 
-function renderChartAndTable(data) {
-    const values = [Number(data.cost)||0, Number(data.impressions)||0, Number(data.clicks)||0, Number(data.landing_page)||0];
-    document.getElementById("tableBody").innerHTML = `<tr><td>${values[0]}</td><td>${values[1]}</td><td>${values[2]}</td><td>${values[3]}</td></tr>`;
-    
-    const ctx = document.getElementById("chart").getContext('2d');
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ["التكلفة", "مرات الظهور", "النقرات", "زوار الصفحة"],
-            datasets: [{ 
-                data: values, 
-                backgroundColor: "#EC6F54", 
-                borderRadius: 8 
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
-}
- 
-function prevDay() { 
-    // نفترض أن العودة للخلف تعني زيادة الـ index للبيانات الأقدم
-    currentDay++; 
-    updateLayerData(); 
+  });
+
+  document.getElementById("totalClicks").textContent = totals.clicks.toLocaleString();
+  document.getElementById("totalImpressions").textContent = totals.impressions.toLocaleString();
+  document.getElementById("totalVisitors").textContent = totals.visitors.toLocaleString();
+  document.getElementById("totalCost").textContent = totals.cost.toLocaleString();
 }
 
-function nextDay() { 
-    if (currentDay > 0) { 
-        currentDay--; 
-        updateLayerData(); 
-    } 
+async function openLayer(platform){
+  currentPlatform = platform;
+  currentDay = 0;
+  document.getElementById("layer").classList.add("active");
+  document.getElementById("platformLogo").src = platformLogos[platform];
+
+  const activeClient = clientsData.find(c => c.active === "TRUE");
+  const clientData = clientsData.filter(d => d.client_id === activeClient.client_id && d.platform === platform);
+
+  dataSet[platform] = clientData.map(d => ({
+    landing: Number(d.landing_page) || 0,
+    clicks: Number(d.clicks) || 0,
+    impressions: Number(d.impressions) || 0,
+    cost: Number(d.cost) || 0,
+    date: d.date
+  }));
+
+  updateData();
 }
 
-init();
+function updateData(){
+  const platformData = dataSet[currentPlatform] || [];
+  if(platformData.length > 0){
+    const data = platformData[currentDay];
+    document.getElementById("dateText").innerText = data.date || "--/--";
+    updateChartAndTable(data);
+  } else {
+    document.getElementById("dateText").innerText = "-- / --";
+    updateChartAndTable({landing: 0, clicks: 0, impressions: 0, cost: 0});
+  }
+}
+
+function updateChartAndTable(data) {
+  const landing = data.landing || 0;
+  const clicks = data.clicks || 0;
+  const impressions = data.impressions || 0;
+  const cost = data.cost || 0;
+
+  document.getElementById("dataTable").innerHTML = `
+    <tr>
+      <th>زوار الصفحة</th>
+      <th>النقرات</th>
+      <th>مرات الظهور</th>
+      <th>التكلفة</th>
+    </tr>
+    <tr>
+      <td>${landing}</td>
+      <td>${clicks}</td>
+      <td>${impressions}</td>
+      <td>${cost}</td>
+    </tr>
+  `;
+
+  const ctx = document.getElementById("chart").getContext('2d');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ["زوار الصفحة","النقرات","مرات الظهور","التكلفة"],
+      datasets: [{
+        label: "البيانات اليومية",
+        data: [landing, clicks, impressions, cost],
+        backgroundColor: "rgba(236,111,84,0.5)"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true },
+        x: { ticks: { color: 'rgba(0,0,0,0.5)' } }
+      }
+    }
+  });
+}
+
+function closeLayer(){ document.getElementById("layer").classList.remove("active"); }
+function prevDay(){ const max = (dataSet[currentPlatform]?.length || 1) - 1; if(currentDay < max){currentDay++; updateData();} }
+function nextDay(){ if(currentDay > 0){currentDay--; updateData();} }
+
+fetchClients();
