@@ -19,31 +19,41 @@ const platformLogos = {
 };
 
 async function fetchData() {
+  if (!userToken) {
+    showErrorMessage();
+    return;
+  }
+
   try {
     const res = await fetch(apiURL);
     globalData = await res.json();
 
-   
     const activeClient = globalData.clients.find(
-      c => String(c.token).trim() === String(userToken).trim() && userToken !== null
+      c => String(c.token).trim() === String(userToken).trim() && 
+           String(c.active).toUpperCase() === "TRUE"
     );
 
     if (activeClient) {
       updateUIForClient(activeClient);
       calculateGlobalTotals(activeClient.client_id);
     } else {
-      
-      document.body.innerHTML = `
-        <div style="background:#4A0067; height:100vh; display:flex; align-items:center; justify-content:center; color:white; font-family:sans-serif; text-align:center; direction:rtl;">
-          <div>
-            <h1>عذراً، الرابط غير صحيح</h1>
-            <p> يرجى التأكد من الحصول على الرابط الخاص بك </p>
-          </div>
-        </div>`;
+      showErrorMessage();
     }
   } catch (error) {
     console.error("خطأ في جلب البيانات:", error);
+    showErrorMessage("حدث خطأ أثناء تحميل البيانات، يرجى المحاولة لاحقاً.");
   }
+}
+
+
+function showErrorMessage(message = "عذراً، الرابط غير مفعل") {
+  document.body.innerHTML = `
+    <div style="background:#4A0067; height:100vh; display:flex; align-items:center; justify-content:center; color:white; font-family:sans-serif; text-align:center; direction:rtl; padding:20px;">
+      <div>
+        <h1 style="font-size:32px; margin-bottom:20px;">وصول غير مصرح</h1>
+        <p style="font-size:18px;">${message}</p>
+      </div>
+    </div>`;
 }
 
 function updateUIForClient(client) {
