@@ -1,63 +1,56 @@
 let currentPlatform = "";
 let currentDay = 0;
 let chart;
+let globalData = { clients: [], platforms_data: [] };
+let filteredPlatformData = [];
 
-// REPLACE THIS with your "Published to Web" CSV link from Google Sheets
 const apiURL = "https://script.google.com/macros/s/AKfycbykOtdU3vQT8L1FH36XsMMlUCW-rsLvtLS7-OTMFnlzDgRpDEvAzhdbjegQ-HsYe-xY/exec";
 
 const platformLogos = {
-  TikTok:"images/tiktok.png",
-  X:"images/x.png",
-  Snapchat:"images/snapchat.png",
-  LinkedIn:"images/linkedin.png",
-  Instagram:"images/instagram.png",
-  YouTube:"images/youtube.png"
+  TikTok: "images/tiktok.png",
+  X: "images/x.png",
+  Snapchat: "images/snapchat.png",
+  LinkedIn: "images/linkedin.png",
+  Instagram: "images/instagram.png",
+  YouTube: "images/youtube.png"
 };
 
-let clientsData = [];
-let dataSet = {};
-
-function csvToArray(str, delimiter = ",") {
-  const lines = str.split("\n");
-  const headers = lines[0].split(delimiter).map(h => h.trim());
-  return lines.slice(1).map(line => {
-    const values = line.split(delimiter);
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
-    return obj;
-  });
-}
-
-async function fetchClients() {
+async function fetchData() {
   try {
     const res = await fetch(apiURL);
-    const text = await res.text();
-    clientsData = csvToArray(text);
+    globalData = await res.json();
 
-    const activeClient = clientsData.find(c => c.active === "TRUE");
-    if(activeClient){
-      document.getElementById("clientSlogan").textContent = activeClient.slogan || "نص الشعار هنا";
-      document.getElementById("clientLogo").src = activeClient.logo_url;
-      document.getElementById("summaryClientName").textContent = activeClient.client_name || "اسم العميل";
-      
-      // Update Global Dashboard
-      updateGlobalDashboard(activeClient.client_id);
+    const activeClient = globalData.clients.find(
+      c => c.active === true || c.active === "TRUE"
+    );
+
+    if (activeClient) {
+      updateUIForClient(activeClient);
+      calculateGlobalTotals(activeClient.client_id);
     }
   } catch (error) {
-    console.error("Error fetching data from Google Sheets:", error);
+    console.error("خطأ في جلب البيانات:", error);
   }
 }
 
-function updateGlobalDashboard(clientId) {
+function updateUIForClient(client) {
+  document.getElementById("clientSlogan").textContent = client.slogan || "نص الشعار هنا";
+  document.getElementById("clientLogo").src = client.logo_url || "";
+  document.getElementById("summaryClientName").textContent = client.client_name || "اسم العميل";
+}
+
+function calculateGlobalTotals(clientId) {
+  const clientData = globalData.platforms_data.filter(
+    d => String(d.client_id) === String(clientId)
+  );
+
   let totals = { clicks: 0, impressions: 0, visitors: 0, cost: 0 };
 
-  clientsData.forEach(row => {
-    if(row.client_id === clientId) {
-      totals.clicks += Number(row.clicks) || 0;
-      totals.impressions += Number(row.impressions) || 0;
-      totals.visitors += Number(row.landing_page) || 0;
-      totals.cost += Number(row.cost) || 0;
-    }
+  clientData.forEach(row => {
+    totals.clicks += Number(row.clicks) || 0;
+    totals.impressions += Number(row.impressions) || 0;
+    totals.visitors += Number(row.landing_page) || 0;
+    totals.cost += Number(row.cost) || 0;
   });
 
   document.getElementById("totalClicks").textContent = totals.clicks.toLocaleString();
@@ -66,85 +59,113 @@ function updateGlobalDashboard(clientId) {
   document.getElementById("totalCost").textContent = totals.cost.toLocaleString();
 }
 
-async function openLayer(platform){
-  currentPlatform = platform;
+async function openLayer(platform) {
+  currentPlatform = platform.toLowerCase();
   currentDay = 0;
+
+  const activeClient = globalData.clients.find(
+    c => c.active === true || c.active === "TRUE"
+  );
+  if (!activeClient) return;
+
+  filteredPlatformData = globalData.platforms_data.filter(d =>
+    String(d.client_id) === String(activeClient.client_id) &&
+    d.platform.toLowerCase() === currentPlatform
+  );
+
+  filteredPlatformData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
   document.getElementById("layer").classList.add("active");
   document.getElementById("platformLogo").src = platformLogos[platform];
 
-  const activeClient = clientsData.find(c => c.active === "TRUE");
-  const clientData = clientsData.filter(d => d.client_id === activeClient.client_id && d.platform === platform);
-
-  dataSet[platform] = clientData.map(d => ({
-    landing: Number(d.landing_page) || 0,
-    clicks: Number(d.clicks) || 0,
-    impressions: Number(d.impressions) || 0,
-    cost: Number(d.cost) || 0,
-    date: d.date
-  }));
-
-  updateData();
+  updateLayerData();
 }
 
-function updateData(){
-  const platformData = dataSet[currentPlatform] || [];
-  if(platformData.length > 0){
-    const data = platformData[currentDay];
-    document.getElementById("dateText").innerText = data.date || "--/--";
+function updateLayerData() {
+  if (filteredPlatformData.length > 0) {
+    const data = filteredPlatformData[currentDay];
+    const dateObj = new Date(data.date);
+    const formattedDate = !isNaN(dateObj)
+      ? dateObj.toLocaleDateString('en-GB')
+      : data.date;
+
+    document.getElementById("dateText").innerText = formattedDate;
     updateChartAndTable(data);
   } else {
-    document.getElementById("dateText").innerText = "-- / --";
-    updateChartAndTable({landing: 0, clicks: 0, impressions: 0, cost: 0});
+    document.getElementById("dateText").innerText = "لا توجد بيانات";
+    updateChartAndTable({ landing_page: 0, clicks: 0, impressions: 0, cost: 0 });
   }
 }
 
 function updateChartAndTable(data) {
-  const landing = data.landing || 0;
-  const clicks = data.clicks || 0;
-  const impressions = data.impressions || 0;
-  const cost = data.cost || 0;
+  const landing = Number(data.landing_page) || 0;
+  const clicks = Number(data.clicks) || 0;
+  const impressions = Number(data.impressions) || 0;
+  const cost = Number(data.cost) || 0;
 
+  // تحديث محتوى الجدول (الرؤوس والبيانات معاً لضمان عدم المساس بالهيكل)
   document.getElementById("dataTable").innerHTML = `
-    <tr>
-      <th>زوار الصفحة</th>
-      <th>النقرات</th>
-      <th>مرات الظهور</th>
-      <th>التكلفة</th>
-    </tr>
-    <tr>
-      <td>${landing}</td>
-      <td>${clicks}</td>
-      <td>${impressions}</td>
-      <td>${cost}</td>
-    </tr>
+    <thead>
+      <tr>
+        <th>زوار الصفحة</th>
+        <th>النقرات</th>
+        <th>مرات الظهور</th>
+        <th>التكلفة</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>${landing.toLocaleString()}</td>
+        <td>${clicks.toLocaleString()}</td>
+        <td>${impressions.toLocaleString()}</td>
+        <td>${cost.toLocaleString()}</td>
+      </tr>
+    </tbody>
   `;
 
-  const ctx = document.getElementById("chart").getContext('2d');
-  if(chart) chart.destroy();
+  // رسم المخطط البياني (يبقى كما هو لضمان الحجم)
+  const ctx = document.getElementById("chart").getContext("2d");
+  if (chart) chart.destroy();
+
   chart = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
-      labels: ["زوار الصفحة","النقرات","مرات الظهور","التكلفة"],
+      labels: ["زوار الصفحة", "النقرات", "مرات الظهور", "التكلفة"],
       datasets: [{
-        label: "البيانات اليومية",
         data: [landing, clicks, impressions, cost],
-        backgroundColor: "rgba(236,111,84,0.5)"
+        backgroundColor: "rgba(236,111,84,0.7)"
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false }
+      },
       scales: {
         y: { beginAtZero: true },
-        x: { ticks: { color: 'rgba(0,0,0,0.5)' } }
+        x: { ticks: { color: "rgba(0,0,0,0.5)" } }
       }
     }
   });
 }
 
-function closeLayer(){ document.getElementById("layer").classList.remove("active"); }
-function prevDay(){ const max = (dataSet[currentPlatform]?.length || 1) - 1; if(currentDay < max){currentDay++; updateData();} }
-function nextDay(){ if(currentDay > 0){currentDay--; updateData();} }
+function closeLayer() {
+  document.getElementById("layer").classList.remove("active");
+}
 
-fetchClients();
+function prevDay() {
+  if (currentDay < filteredPlatformData.length - 1) {
+    currentDay++;
+    updateLayerData();
+  }
+}
+
+function nextDay() {
+  if (currentDay > 0) {
+    currentDay--;
+    updateLayerData();
+  }
+}
+
+fetchData();
