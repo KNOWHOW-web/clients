@@ -4,6 +4,9 @@ let chart;
 let globalData = { clients: [], platforms_data: [] };
 let filteredPlatformData = [];
 
+const urlParams = new URLSearchParams(window.location.search);
+const userToken = urlParams.get('t'); 
+
 const apiURL = "https://script.google.com/macros/s/AKfycbykOtdU3vQT8L1FH36XsMMlUCW-rsLvtLS7-OTMFnlzDgRpDEvAzhdbjegQ-HsYe-xY/exec";
 
 const platformLogos = {
@@ -20,13 +23,23 @@ async function fetchData() {
     const res = await fetch(apiURL);
     globalData = await res.json();
 
+   
     const activeClient = globalData.clients.find(
-      c => c.active === true || c.active === "TRUE"
+      c => String(c.token).trim() === String(userToken).trim() && userToken !== null
     );
 
     if (activeClient) {
       updateUIForClient(activeClient);
       calculateGlobalTotals(activeClient.client_id);
+    } else {
+      
+      document.body.innerHTML = `
+        <div style="background:#4A0067; height:100vh; display:flex; align-items:center; justify-content:center; color:white; font-family:sans-serif; text-align:center; direction:rtl;">
+          <div>
+            <h1>عذراً، الرابط غير صحيح</h1>
+            <p> يرجى التأكد من الحصول على الرابط الخاص بك </p>
+          </div>
+        </div>`;
     }
   } catch (error) {
     console.error("خطأ في جلب البيانات:", error);
@@ -63,9 +76,11 @@ async function openLayer(platform) {
   currentPlatform = platform.toLowerCase();
   currentDay = 0;
 
+
   const activeClient = globalData.clients.find(
-    c => c.active === true || c.active === "TRUE"
+    c => String(c.token).trim() === String(userToken).trim()
   );
+  
   if (!activeClient) return;
 
   filteredPlatformData = globalData.platforms_data.filter(d =>
@@ -103,7 +118,6 @@ function updateChartAndTable(data) {
   const impressions = Number(data.impressions) || 0;
   const cost = Number(data.cost) || 0;
 
-  // تحديث محتوى الجدول (الرؤوس والبيانات معاً لضمان عدم المساس بالهيكل)
   document.getElementById("dataTable").innerHTML = `
     <thead>
       <tr>
@@ -123,7 +137,6 @@ function updateChartAndTable(data) {
     </tbody>
   `;
 
-  // رسم المخطط البياني (يبقى كما هو لضمان الحجم)
   const ctx = document.getElementById("chart").getContext("2d");
   if (chart) chart.destroy();
 
