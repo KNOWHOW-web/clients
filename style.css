@@ -166,11 +166,18 @@
   width: 75%;
   background: white;
   padding: 40px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px; 
 }
 
 table {
   width: 100%;
-  margin-top: 30px;
+  max-width: 600px; 
+  margin-top: 0; 
   border-collapse: collapse;
 }
 
