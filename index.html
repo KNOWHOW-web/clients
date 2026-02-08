@@ -64,20 +64,26 @@
   </div>
 
   <div class="layer-right">
-    <canvas id="chart" width="400" height="250"></canvas>
+  <div style="height: 300px; width: 100%; max-width: 600px; margin: 0 auto;">
+    <canvas id="chart"></canvas>
+  </div>
 
-    <table id="dataTable">
+  <table id="dataTable">
+    <thead>
       <tr>
         <th>زوار الصفحة</th>
         <th>النقرات</th>
         <th>مرات الظهور</th>
         <th>التكلفة</th>
       </tr>
+    </thead>
+    <tbody id="tableBody">
       <tr>
         <td colspan="4">لا توجد بيانات</td>
       </tr>
-    </table>
-  </div>
+    </tbody>
+  </table>
+</div>
 </div>
 
 <script src="script.js"></script>
